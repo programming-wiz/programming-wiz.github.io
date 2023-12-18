@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Booking Hotel - LuxStays</title>
+
+  <link rel="icon" href="../favicon/favicon.ico" type="image/x-icon" />
+  <link rel="icon" type="image/png" sizes="192x192" href="../LuxStays/favicon/android-chrome-192x192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="../LuxStays/favicon/android-chrome-512x512.png" />
+  <link rel="apple-touch-icon" href="../LuxStays/favicon/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="../LuxStays/favicon/favicon-16x16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="../LuxStays/favicon/favicon-32x32.png" />
+
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@2"></script>
+</head>
+
+<body>
+  <header>
+    <a class="logo" href="index.html"><img src="./images/logo.png" alt="logo" width="150px" /></a>
+    <nav>
+      <ul class="nav__links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="hotel_branches.html">Hotel Branches</a></li>
+        <li><a href="adventures.html">Adventures</a></li>
+        <li class="dropdown">
+          <a href="restaurants.html" class="dropbtn">Restaurants</a>
+          <div class="dropdown-content">
+            <a href="event1.html">Event 1</a>
+            <a href="event2.html">Event 2</a>
+          </div>
+        </li>
+        <li><a href="#">Booking Hotel</a></li>
+      </ul>
+    </nav>
+    <p class="menu cta">Menu</p>
+  </header>
+
+  <div class="overlay">
+    <a class="close">&times;</a>
+    <div class="overlay__content">
+      <a href="index.html">Home</a>
+      <a href="#">Hotel Branches</a>
+      <a href="adventures.html">Adventures</a>
+      <a href="restaurants.html">Restaurants</a>
+      <a href="booking.html">Booking Hotel</a>
+    </div>
+  </div>
+
+  <div class="main-heading">
+    <p>
+      Seize the opportunity to elevate your travel experience - book a hotel
+      at LuxStays and discover a world of luxury, comfort, and unforgettable
+      moments
+    </p>
+  </div>
+
+  <div x-data="bookingForm()" x-init="init()" class="container">
+
+    <form action="#" method="POST" @submit.prevent="bookNow">
+      <h2>Hotel Booking Form</h2>
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" x-model="name" required />
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" x-model="email" required />
+
+      <label for="check-in">Check-In Date:</label>
+      <input type="date" id="check-in" name="check-in" x-model="checkIn" required />
+
+      <label for="check-out">Check-Out Date:</label>
+      <input type="date" id="check-out" name="check-out" x-model="checkOut" required />
+
+      <label for="room-type">Room Type:</label>
+      <select id="room-type" name="room-type" x-model="roomType" required @change="updateTotalPrice">
+        <option value="single">Single</option>
+        <option value="double">Double</option>
+        <option value="triple">Triple</option>
+      </select>
+
+      <label for="extra-requirements">Extra Requirements:</label>
+      <div>
+        <label>
+          <input type="checkbox" id="wifi" name="wifi" x-model="extraRequirements.wifi" />
+          Wifi
+        </label>
+        <label>
+          <input type="checkbox" id="pool" name="pool" x-model="extraRequirements.pool" />
+          Pool
+        </label>
+        <label>
+          <input type="checkbox" id="garden-view" name="garden-view" x-model="extraRequirements.gardenView" />
+          Garden View
+        </label>
+        <label>
+          <input type="checkbox" id="extra-bed" name="extra-bed" x-model="extraRequirements.extraBed"
+            @change="updateTotalPrice" />
+          Extra Bed
+        </label>
+      </div>
+
+      <label for="num-rooms">Number of Rooms:</label>
+      <select id="num-rooms" name="num-rooms" x-model="numRooms" required @change="updateTotalPrice">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+
+      <label for="num-adults">Number of Adults:</label>
+      <select id="num-adults" name="num-adults" x-model="numAdults" required>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+
+      <label for="num-children">Number of Children:</label>
+      <select id="num-children" name="num-children" x-model="numChildren" required>
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
+
+      <label for="children-above-5">Children above 5:</label>
+      <select id="children-above-5" name="children-above-5" x-model="childrenAbove5" required
+        @change="updateTotalPrice">
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
+
+      <input type="text" x-model="promoCode" placeholder="Promo Code" />
+
+      <label for="loyalty-points">Loyalty Points:</label>
+      <p x-text="'You have ' + loyaltyPoints + ' loyalty points'"></p>
+
+      <!-- Display the total price dynamically -->
+      <label>Total Price:</label>
+      <p x-text="'Total Price: ' + totalPrice"></p>
+
+      <button @click="bookNow">Book now</button>
+      <!-- Add to Favorites button for Hotel Booking Form -->
+      <button @click="addToFavorites('hotel')">Add to Favorites</button>
+      <!-- Check Loyalty button -->
+      <button @click="checkLoyalty">Check Loyalty</button>
+      <!-- Clear Form button -->
+      <button @click="clearForm">Clear Form</button>
+    </form>
+
+    <!-- Adventure Booking Form -->
+    <form action="#" method="POST" @submit.prevent="bookAdventure">
+      <h2>Adventure Booking Form</h2>
+
+      <label for="diving-local-adults">Diving for Local Adults (1hr):</label>
+      <select id="diving-local-adults" name="diving-local-adults" x-model="divingLocalAdults" required>
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
+
+      <label for="diving-local-kids">Diving for Local Kids (Above 5 years):</label>
+      <select id="diving-local-kids" name="diving-local-kids" x-model="divingLocalKids" required>
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
+
+      <label for="diving-foreign-adults">Diving for Foreign Adults:</label>
+      <select id="diving-foreign-adults" name="diving-foreign-adults" x-model="divingForeignAdults" required>
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
+
+      <label for="diving-foreign-kids">Diving for Foreign Kids:</label>
+      <select id="diving-foreign-kids" name="diving-foreign-kids" x-model="divingForeignKids" required>
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
+
+      <label>
+        <input type="checkbox" id="adult-guide" name="adult-guide" x-model="adultGuide" />
+        Adult Guide
+      </label>
+
+      <label>
+        <input type="checkbox" id="kids-guide" name="kids-guide" x-model="kidsGuide" />
+        Kids Guide
+      </label>
+
+      <button @click="bookAdventure">Book Adventure</button>
+      <!-- Add to Favorites button for Adventure Booking Form -->
+      <button @click="addToFavorites('adventure')">Add to Favorites</button>
+      <!-- Clear Adventure button -->
+      <button @click="clearAdventureForm">Clear Adventure</button>
+    </form>
+
+    <h1>Past Bookings</h1>
+
+    <div x-init="bookingForm()">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Check In</th>
+            <th>Check Out</th>
+            <th>Room Type</th>
+            <th>No. of Rooms</th>
+            <th>No. of Adults</th>
+            <th>No. of Children</th>
+            <th>Total Price</th>
+            <!-- Add more headers as needed -->
+          </tr>
+        </thead>
+        <tbody>
+          <template x-for="booking in pastBookings" :key="booking.id">
+            <tr>
+              <td x-text="booking.name"></td>
+              <td x-text="booking.checkIn"></td>
+              <td x-text="booking.checkOut"></td>
+              <td x-text="booking.roomType"></td>
+              <td x-text="booking.numRooms"></td>
+              <td x-text="booking.numAdults"></td>
+              <td x-text="booking.numChildren"></td>
+              <td x-text="booking.totalPrice"></td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="footer">
+    <h3>LuxStays</h3>
+    <p>LuxStays - Where Luxury Meets Adventure. Immerse yourself in opulent comfort, savor the flavors of our diverse
+      cuisines, and explore exciting adventures. Your extraordinary journey starts now</p>
+  </div>
+
+  <div class="footer-text-row">
+    <h4>Contact Us:</h4>
+    <p>465 Gregory Avenue, Colombo 5, SriLanka.</p>
+    <p>Email: info@luxstays.com</p>
+    <p>Phone: +1 (123) 456-7890</p>
+  </div>
+
+
+  <script>
+    function bookingForm() {
+      const roomPrices = {
+        single: 25000,
+        double: 35000,
+        triple: 40000,
+      };
+
+      const adventurePrices = {
+        divingLocalAdults: 5000,
+        divingLocalKids: 2000,
+        divingForeignAdults: 10000,
+        divingForeignKids: 5000,
+      };
+
+      return {
+        name: "",
+        email: "",
+        checkIn: "",
+        checkOut: "",
+        roomType: "single",
+        extraRequirements: {
+          wifi: false,
+          pool: false,
+          gardenView: false,
+          extraBed: false,
+        },
+        numRooms: "1",
+        numAdults: "1",
+        numChildren: "0",
+        childrenAbove5: "0",
+        promoCode: "",
+        loyaltyPoints: 0,
+        totalPrice: 25000, // Default to the price of a single room
+
+        adventureTotalPrice: 0,
+
+        //new
+        // Adventure booking form data
+        divingLocalAdults: "0",
+        divingLocalKids: "0",
+        divingForeignAdults: "0",
+        divingForeignKids: "0",
+        adultGuide: false,
+        kidsGuide: false,
+
+
+        loyaltyPoints: parseInt(localStorage.getItem("loyaltyPoints")) || 0,
+
+        clearForm() {
+          // Display a confirmation popup before clearing the form
+          if (confirm("Are you sure you want to clear the form?")) {
+            // Clear all form fields
+            this.name = "";
+            this.email = "";
+            this.checkIn = "";
+            this.checkOut = "";
+            this.roomType = "single";
+            this.extraRequirements = {
+              wifi: false,
+              pool: false,
+              gardenView: false,
+              extraBed: false,
+            };
+            this.numRooms = "1";
+            this.numAdults = "1";
+            this.numChildren = "0";
+            this.childrenAbove5 = "0";
+            this.promoCode = "";
+            this.totalPrice = 25000; // Default to the price of a single room
+          }
+
+        },
+        clearAdventureForm() {
+          // Display a confirmation popup before clearing the adventure form
+          if (confirm("Are you sure you want to clear the adventure form?")) {
+            // Clear all adventure form fields
+            this.divingLocalAdults = "0";
+            this.divingLocalKids = "0";
+            this.divingForeignAdults = "0";
+            this.divingForeignKids = "0";
+            this.adultGuide = false;
+            this.kidsGuide = false;
+          }
+        },
+
+        pastBookings: [], // Initialize an empty array for past bookings
+
+        init() {
+          // Initialization logic if needed
+          // Initialize local storage values if not set
+          // if (!localStorage.getItem("hotelBooking")) {
+          //   localStorage.setItem("hotelBooking", JSON.stringify(this.$data));
+          // }
+
+          // if (!localStorage.getItem("adventureBooking")) {
+          //   localStorage.setItem("adventureBooking", JSON.stringify(this.$data));
+          // }
+
+          // // Retrieve previous loyalty points from local storage
+          // this.loyaltyPoints = parseInt(localStorage.getItem("loyaltyPoints")) || 0;
+
+          // Retrieve past bookings from localStorage or any other data source
+          const storedBookings = JSON.parse(localStorage.getItem("pastBookings")) || [];
+          this.pastBookings = storedBookings;
+
+        },
+
+        getBooking() {
+          return {
+            name: this.name,
+            email: this.email,
+            checkIn: this.checkIn,
+            checkOut: this.checkOut,
+            roomType: this.roomType,
+            extraRequirements: this.extraRequirements,
+            numRooms: this.numRooms,
+            numAdults: this.numAdults,
+            numChildren: this.numChildren,
+            childrenAbove5: this.childrenAbove5,
+            promoCode: this.promoCode,
+            loyaltyPoints: this.loyaltyPoints,
+            totalPrice: this.totalPrice,
+          };
+        },
+
+        setBooking(booking) {
+          this.name = booking.name;
+          this.email = booking.email;
+          this.checkIn = booking.checkIn;
+          this.checkOut = booking.checkOut;
+          this.roomType = booking.roomType;
+          this.extraRequirements = booking.extraRequirements;
+          this.numRooms = booking.numRooms;
+          this.numAdults = booking.numAdults;
+          this.numChildren = booking.numChildren;
+          this.childrenAbove5 = booking.childrenAbove5;
+          this.promoCode = booking.promoCode;
+          this.loyaltyPoints = booking.loyaltyPoints;
+          this.totalPrice = booking.totalPrice;
+        },
+
+        getAdventure() {
+          return {
+            divingLocalAdults: this.divingLocalAdults,
+            divingLocalKids: this.divingLocalKids,
+            divingForeignAdults: this.divingForeignAdults,
+            divingForeignKids: this.divingForeignKids,
+            adultGuide: this.adultGuide,
+            kidsGuide: this.kidsGuide,
+          };
+        },
+
+
+        setAdventure() {
+          this.divingLocalAdults = adventure.divingLocalAdults;
+          this.divingLocalKids = adventure.divingLocalKids;
+          this.divingForeignAdults = adventure.divingForeignAdults;
+          this.divingForeignKids = adventure.divingForeignKids;
+          this.adultGuide = adventure.adultGuide;
+          this.kidsGuide = adventure.kidsGuide;
+        },
+
+        addToFavorites(type) {
+
+          // console.log(type, this.getBooking());
+          // // Create a unique key for storing in local storage based on the booking type
+          // const key = type === "hotel" ? "hotelBooking" : "adventureBooking";
+
+          // console.log(this.$data);
+          // // Save the booking details in local storage
+          // localStorage.setItem(key, JSON.stringify(this.$data));
+
+          // // Save the booking details and loyalty points in local storage     
+          // localStorage.setItem("loyaltyPoints", this.loyaltyPoints.toString());
+          // localStorage.setItem("bookingform", this.bookingForm(), JSON.stringify(getBooking()));
+          // console.log(this.bookingForm(), JSON.stringify(bookingForm()));       
+
+          // // Provide feedback to the user
+          // alert(
+          //   `Booking added to Favorites for ${type === "hotel" ? "Hotel" : "Adventure"
+          //   }`
+          // );
+
+          // Save the booking details in local storage
+          localStorage.setItem("bookingForm", JSON.stringify(this.getBooking()));
+
+          // Provide feedback to the user
+          alert(`Booking added to Favorites for ${type === "hotel" ? "Hotel" : "Adventure"}`);
+
+          localStorage.setItem("bookingAdventure", JSON.stringify(this.getAdventure()));
+        },
+
+
+        checkLoyalty() {
+          // Implement the logic to check loyalty points and provide feedback to the user
+          alert(`You have ${this.loyaltyPoints} loyalty points.`);
+
+          // Save the updated loyalty points in local storage
+          localStorage.setItem("loyaltyPoints", this.loyaltyPoints);
+        },
+
+
+
+        updateTotalPrice() {
+          // Retrieve previous loyalty points from local storage
+          const previousLoyaltyPoints = parseInt(localStorage.getItem("loyaltyPoints")) || 0;
+
+          // Update the total price based on the room type, number of rooms, children above 5, and extra bed
+          let basePrice = roomPrices[this.roomType] * this.numRooms;
+          let childrenAbove5Price = this.childrenAbove5 * 5000;
+          let extraBedPrice = this.extraRequirements.extraBed ? 8000 : 0;
+
+          // Calculate the total price before discount
+          let totalPriceBeforeDiscount = basePrice + childrenAbove5Price + extraBedPrice;
+
+          // Initialize discount as 0
+          let discount = 0;
+
+          console.log(this.promoCode);
+
+          // Check if the promo code is "Promo123"
+          if (this.promoCode.toLowerCase() === "promo123") {
+            // Apply a 5% discount
+
+            discount = totalPriceBeforeDiscount * 0.05;
+          }
+
+          // Apply the discount to the total price
+          this.totalPrice = totalPriceBeforeDiscount - discount;
+
+          // Check if the number of rooms is greater than 3
+          if (parseInt(this.numRooms) > 3) {
+            // Award 20 loyalty points per room
+            this.loyaltyPoints = 20 * parseInt(this.numRooms) + previousLoyaltyPoints;
+
+            // Store the total loyalty points in local storage
+            localStorage.setItem("loyaltyPoints", this.loyaltyPoints);
+          } else {
+            // If the number of rooms is 3 or fewer, set loyalty points to 0
+            this.loyaltyPoints = 0;
+          }
+        },
+
+        bookNow() {
+
+          // Construct the confirmation message
+          let confirmationMessage =
+            `Thank you for booking!\n` +
+            `Name: ${this.name}\n` +
+            `Email: ${this.email}\n` +
+            `Check-In Date: ${this.checkIn}\n` +
+            `Check-Out Date: ${this.checkOut}\n` +
+            `Room Type: ${this.roomType}\n` +
+            `Number of Rooms: ${this.numRooms}\n` +
+            `Number of Adults: ${this.numAdults}\n` +
+            `Number of Children: ${this.numChildren}\n` +
+            `Children above 5: ${this.childrenAbove5}\n` +
+            `Loyalty Points: ${this.loyaltyPoints}\n` +
+            `Total Price: ${this.totalPrice}`;
+
+          //Diplay the confirmation popup
+          confirm(confirmationMessage);
+
+          // add the booking object to the past_bookings array
+          this.pastBookings.push(this.getBooking());
+
+          // Save past bookings array to localStorage
+          localStorage.setItem("pastBookings", JSON.stringify(this.pastBookings));
+        },
+
+        bookAdventure() {
+          // Display a simple alert for adventure booking
+          let adventureTotalPrice =
+            this.divingLocalAdults * adventurePrices.divingLocalAdults +
+            this.divingLocalKids * adventurePrices.divingLocalKids +
+            this.divingForeignAdults * adventurePrices.divingForeignAdults +
+            this.divingForeignKids * adventurePrices.divingForeignKids;
+
+
+          let adventureDetails =
+            'Thanks for booking adventure: ' +
+            `Diving for Local Adults: ${this.divingLocalAdults}, ` +
+            `Diving for Local Kids: ${this.divingLocalKids}, ` +
+            `Diving for Foreign Adults: ${this.divingForeignAdults}, ` +
+            `Diving for Foreign Kids: ${this.divingForeignKids}, ` +
+            `Adult Guide: ${this.adultGuide ? "Yes" : "No"}, ` +
+            `Kids Guide: ${this.kidsGuide ? "Yes" : "No"}`;
+
+          // Save the current booking to pastBookings array
+          this.pastBookings.push(this.getBooking());
+
+          // Save past bookings array to localStorage
+          localStorage.setItem("pastBookings", JSON.stringify(this.pastBookings));
+
+          // Check if Adult Guide is selected
+          if (this.adultGuide) {
+            adventureTotalPrice += 1000; // Additional cost for Adult Guide
+          }
+
+          // Check if Kids Guide is selected
+          if (this.kidsGuide) {
+            adventureTotalPrice += 500; // Additional cost for Kids Guide
+          }
+
+          // Display a confirmation popup
+          if (confirm(`${adventureDetails}\nTotal Price: ${adventureTotalPrice}\n\nAre you sure you want to proceed?`)) {
+            // User confirmed, you can proceed with additional actions if needed
+          } else {
+            // User canceled, you can handle this case if needed
+            return;
+          }
+        },
+      };
+    }
+  </script>
+
+  <script type="text/javascript" src="mobile.js"></script>
+
+</html>
